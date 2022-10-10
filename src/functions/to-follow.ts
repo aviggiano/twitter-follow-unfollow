@@ -2,7 +2,7 @@ import database, { User, connect, disconnect } from "../database";
 import config from "../config";
 import { TTweetv2UserField, TwitterApi, UserV2 } from "twitter-api-v2";
 import { Logger } from "tslog";
-import { differenceInYears } from "date-fns";
+import shouldFollow from "@libs/shouldFollow";
 
 const log = new Logger();
 
@@ -32,58 +32,53 @@ export async function main() {
     "username",
   ];
 
-  const final: UserV2[] = [];
+  let final: UserV2[] = [];
+  const meFollowing: UserV2[] = [];
+  const toFollowFollowers: UserV2[] = [];
+
   let meFollowingNext = undefined;
   let toFollowFollowersNext = undefined;
   while (true) {
-    const {
-      data: meFollowing,
-      meta: { next_token: meToken },
-    } = await twitterClient.following(me.id, {
-      "user.fields": fields,
-      pagination_token: meFollowingNext,
-    });
-    meFollowingNext = meToken as string;
-    log.debug("me", meFollowing.length, meToken);
-    const {
-      data: toFollowFollowers,
-      meta: { next_token: toFollowToken },
-    } = await twitterClient.followers(toFollow.id, {
-      "user.fields": fields,
-      pagination_token: toFollowFollowersNext,
-    });
-    toFollowFollowersNext = toFollowToken as string;
-    log.debug("toFollow", toFollowFollowers.length, toFollowToken);
+    if (meFollowingNext || meFollowing.length === 0) {
+      const {
+        data: meFollowingData,
+        meta: { next_token: meToken },
+      } = await twitterClient.following(me.id, {
+        "user.fields": fields,
+        pagination_token: meFollowingNext,
+      });
+      meFollowing.push(...meFollowingData);
+      meFollowingNext = meToken as string;
+      log.debug("me", meFollowingData.length, meFollowing.length, meToken);
+    }
+
+    if (toFollowFollowersNext || toFollowFollowers.length === 0) {
+      const {
+        data: toFollowFollowersData,
+        meta: { next_token: toFollowToken },
+      } = await twitterClient.followers(toFollow.id, {
+        "user.fields": fields,
+        pagination_token: toFollowFollowersNext,
+      });
+      toFollowFollowers.push(...toFollowFollowersData);
+      toFollowFollowersNext = toFollowToken as string;
+      log.debug(
+        "toFollow",
+        toFollowFollowersData.length,
+        toFollowFollowers.length,
+        toFollowToken
+      );
+    }
 
     const difference = toFollowFollowers.filter(
       (x) => !meFollowing.map((e) => e.id).includes(x.id)
     );
     log.debug("difference", difference.length);
 
-    final.concat(
-      ...difference.filter(
-        (x) =>
-          x.public_metrics?.following_count &&
-          x.public_metrics?.following_count > 100 &&
-          x.public_metrics?.following_count &&
-          x.public_metrics?.following_count > 100 &&
-          x.public_metrics?.tweet_count &&
-          x.public_metrics?.tweet_count > 100 &&
-          x.public_metrics?.listed_count &&
-          x.public_metrics?.listed_count > 0 &&
-          x.profile_image_url &&
-          x.description &&
-          x.created_at &&
-          differenceInYears(new Date(x.created_at), new Date()) > 0
-      )
-    );
-
+    final = difference.filter(shouldFollow);
     log.debug("final", final.length);
 
-    if (
-      final.length > 100 ||
-      (meFollowing.length === 0 && toFollowFollowers.length === 0)
-    ) {
+    if (final.length > 100 || (!meFollowingNext && !toFollowFollowersNext)) {
       break;
     }
   }
