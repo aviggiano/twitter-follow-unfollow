@@ -2,6 +2,7 @@ import type { AWS } from "@serverless/typescript";
 
 import hello from "@functions/hello";
 import follow from "@functions/follow";
+import unfollow from "@functions/unfollow";
 import toFollow from "@functions/to-follow";
 import generateStatistics from "@functions/generate-statistics";
 
@@ -22,7 +23,7 @@ const serverlessConfiguration: AWS = {
     },
     lambdaHashingVersion: "20201221",
   },
-  functions: { hello, toFollow, follow, generateStatistics },
+  functions: { hello, toFollow, follow, unfollow, generateStatistics },
   package: { individually: true },
   custom: {
     esbuild: {

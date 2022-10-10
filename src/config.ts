@@ -5,6 +5,7 @@ export default {
   twitter: {
     bearerToken: process.env.TWITTER_BEARER_TOKEN!,
     toFollowUsername: process.env.TWITTER_TO_FOLLOW_USERNAME!,
+    meUsername: process.env.TWITTER_ME_USERNAME!,
   },
   postgres: {
     host: process.env.POSTGRES_HOST!,

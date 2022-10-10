@@ -16,7 +16,12 @@ export async function main() {
   const { data: toFollow } = await twitterClient.userByUsername(
     config.twitter.toFollowUsername
   );
-  const { data: me } = await twitterClient.me();
+  log.debug(toFollow);
+  const { data: me } = await twitterClient.userByUsername(
+    config.twitter.meUsername
+  );
+  log.debug(me);
+
   const fields: TTweetv2UserField[] = [
     "created_at",
     "description",
@@ -39,6 +44,7 @@ export async function main() {
       pagination_token: meFollowingNext,
     });
     meFollowingNext = meToken as string;
+    log.debug("me", meFollowing.length, meToken);
     const {
       data: toFollowFollowers,
       meta: { next_token: toFollowToken },
@@ -47,10 +53,12 @@ export async function main() {
       pagination_token: toFollowFollowersNext,
     });
     toFollowFollowersNext = toFollowToken as string;
+    log.debug("toFollow", toFollowFollowers.length, toFollowToken);
 
     const difference = toFollowFollowers.filter(
       (x) => !meFollowing.map((e) => e.id).includes(x.id)
     );
+    log.debug("difference", difference.length);
 
     final.concat(
       ...difference.filter(
@@ -70,6 +78,8 @@ export async function main() {
       )
     );
 
+    log.debug("final", final.length);
+
     if (
       final.length > 100 ||
       (meFollowing.length === 0 && toFollowFollowers.length === 0)
@@ -84,6 +94,7 @@ export async function main() {
   }));
 
   await database.manager.save(User, users);
+  await disconnect();
 }
 
 export default {
