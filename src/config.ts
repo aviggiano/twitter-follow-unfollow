@@ -3,7 +3,13 @@ dotenv.config();
 
 export default {
   twitter: {
-    bearerToken: process.env.TWITTER_BEARER_TOKEN!,
+    auth: {
+      bearerToken: process.env.TWITTER_BEARER_TOKEN!,
+      appKey: process.env.TWITTER_APP_KEY!,
+      appSecret: process.env.TWITTER_APP_SECRET!,
+      accessToken: process.env.TWITTER_ACCESS_TOKEN!,
+      accessSecret: process.env.TWITTER_ACCESS_SECRET!,
+    },
     toFollowUsername: process.env.TWITTER_TO_FOLLOW_USERNAME!,
     meUsername: process.env.TWITTER_ME_USERNAME!,
   },

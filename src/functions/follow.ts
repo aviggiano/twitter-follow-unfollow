@@ -10,7 +10,14 @@ export async function main() {
   await connect();
   await database.synchronize();
 
-  const twitterClient = new TwitterApi(config.twitter.bearerToken).v2.readWrite;
+  const client = new TwitterApi({
+    appKey: config.twitter.auth.appKey,
+    appSecret: config.twitter.auth.appSecret,
+    accessToken: config.twitter.auth.accessToken,
+    accessSecret: config.twitter.auth.accessSecret,
+  });
+
+  const twitterClient = client.v2.readWrite;
 
   const users = await database.manager.find(User, {
     where: {
@@ -19,8 +26,12 @@ export async function main() {
     },
     take: 10,
   });
+  log.debug("users", users.length);
 
-  const { data: me } = await twitterClient.me();
+  const { data: me } = await twitterClient.userByUsername(
+    config.twitter.meUsername
+  );
+  log.debug(me);
 
   for (const user of users) {
     await twitterClient.follow(me.id, user.twitterId);

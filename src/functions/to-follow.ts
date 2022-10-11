@@ -11,7 +11,8 @@ export async function main() {
   await connect();
   await database.synchronize();
 
-  const twitterClient = new TwitterApi(config.twitter.bearerToken).v2.readWrite;
+  const twitterClient = new TwitterApi(config.twitter.auth.bearerToken).v2
+    .readOnly;
 
   const { data: toFollow } = await twitterClient.userByUsername(
     config.twitter.toFollowUsername
