@@ -11,6 +11,8 @@ export async function main() {
   await connect();
   await database.synchronize();
 
+  const users = await database.manager.find(User);
+
   const twitterClient = new TwitterApi(config.twitter.auth.bearerToken).v2
     .readOnly;
 
@@ -71,9 +73,12 @@ export async function main() {
       );
     }
 
-    const difference = toFollowFollowers.filter(
-      (x) => !meFollowing.map((e) => e.id).includes(x.id)
-    );
+    const difference = toFollowFollowers
+      .filter(
+        (toUser) => !meFollowing.map((meUser) => meUser.id).includes(toUser.id)
+      )
+      .filter((e) => !users.map((user) => user.id.toString()).includes(e.id));
+
     log.debug("difference", difference.length);
 
     final = difference.filter(shouldFollow);
@@ -84,12 +89,12 @@ export async function main() {
     }
   }
 
-  const users = final.map((x) => ({
+  const newUsers = final.map((x) => ({
     twitterId: x.id,
     twitterUsername: x.username,
   }));
 
-  await database.manager.save(User, users);
+  await database.manager.save(User, newUsers);
   await disconnect();
 }
 
