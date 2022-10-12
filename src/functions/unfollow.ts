@@ -27,7 +27,7 @@ export async function main() {
       follow: LessThan(subHours(new Date(), normal(24))),
       unfollow: IsNull(),
     },
-    take: 10,
+    take: 15,
   });
   log.debug("users", users.length);
 
