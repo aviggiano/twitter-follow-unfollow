@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "local": "serverless invoke local --function",
-    "logs": "serverless logs --tail",
+    "logs": "serverless logs --tail --function",
     "get-secrets": "aws secretsmanager get-secret-value --region us-east-1 --secret-id twitter-follow-unfollow/.env | jq --raw-output '.SecretString' > .env",
     "put-secrets": "aws secretsmanager put-secret-value --region us-east-1 --secret-id twitter-follow-unfollow/.env --secret-string file://.env"
   },

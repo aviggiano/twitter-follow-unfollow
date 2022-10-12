@@ -2,7 +2,7 @@ import database, { User, connect, disconnect } from "../database";
 import config from "../config";
 import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
-import { LessThan } from "typeorm";
+import { IsNull, LessThan } from "typeorm";
 import { subHours } from "date-fns";
 import normal from "@libs/normal";
 
@@ -25,7 +25,7 @@ export async function main() {
   const users = await database.manager.find(User, {
     where: {
       follow: LessThan(subHours(new Date(), normal(24))),
-      unfollow: undefined,
+      unfollow: IsNull(),
     },
     take: 10,
   });

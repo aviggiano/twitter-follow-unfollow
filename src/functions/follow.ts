@@ -2,6 +2,7 @@ import database, { User, connect, disconnect } from "../database";
 import config from "../config";
 import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
+import { IsNull } from "typeorm";
 
 const log = new Logger();
 
@@ -21,8 +22,8 @@ export async function main() {
 
   const users = await database.manager.find(User, {
     where: {
-      follow: undefined,
-      unfollow: undefined,
+      follow: IsNull(),
+      unfollow: IsNull(),
     },
     take: 10,
   });
