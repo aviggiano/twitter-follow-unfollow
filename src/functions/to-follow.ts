@@ -1,8 +1,10 @@
-import database, { User, connect, disconnect } from "../database";
+import database, { User, connect, disconnect, Cursor } from "../database";
 import config from "../config";
 import { TTweetv2UserField, TwitterApi, UserV2 } from "twitter-api-v2";
 import { Logger } from "tslog";
-import shouldFollow from "@libs/shouldFollow";
+import shouldFollow from "../libs/shouldFollow";
+import { IsNull, Not } from "typeorm";
+import waitFor from "../libs/waitFor";
 
 const log = new Logger();
 
@@ -35,43 +37,49 @@ export async function main() {
     "username",
   ];
 
-  let final: UserV2[] = [];
+  let usersShouldFollow: UserV2[] = [];
   const meFollowing: UserV2[] = [];
   const toFollowFollowers: UserV2[] = [];
 
-  let meFollowingNext = undefined;
-  let toFollowFollowersNext = undefined;
+  let cursor = await database.manager.findOne(Cursor, {
+    where: {
+      id: Not(IsNull()),
+    },
+  });
+  if (!cursor) {
+    await database.manager.save(Cursor, {});
+    cursor = (await database.manager.findOne(Cursor, {})) as Cursor;
+  }
   while (true) {
-    if (meFollowingNext || meFollowing.length === 0) {
-      const {
-        data: meFollowingData,
-        meta: { next_token: meToken },
-      } = await twitterClient.following(me.id, {
-        "user.fields": fields,
-        pagination_token: meFollowingNext,
-      });
-      meFollowing.push(...meFollowingData);
-      meFollowingNext = meToken as string;
-      log.debug("me", meFollowingData.length, meFollowing.length, meToken);
-    }
+    log.debug(cursor);
+    const {
+      data: meFollowingData,
+      meta: { next_token: meToken },
+    } = await twitterClient.following(me.id, {
+      "user.fields": fields,
+      pagination_token: cursor.me || undefined,
+    });
+    meFollowing.push(...meFollowingData);
+    cursor.me = meToken;
+    log.debug("me", meFollowingData.length, meFollowing.length, meToken);
+    await database.manager.save(Cursor, cursor);
 
-    if (toFollowFollowersNext || toFollowFollowers.length === 0) {
-      const {
-        data: toFollowFollowersData,
-        meta: { next_token: toFollowToken },
-      } = await twitterClient.followers(toFollow.id, {
-        "user.fields": fields,
-        pagination_token: toFollowFollowersNext,
-      });
-      toFollowFollowers.push(...toFollowFollowersData);
-      toFollowFollowersNext = toFollowToken as string;
-      log.debug(
-        "toFollow",
-        toFollowFollowersData.length,
-        toFollowFollowers.length,
-        toFollowToken
-      );
-    }
+    const {
+      data: toFollowFollowersData,
+      meta: { next_token: toFollowToken },
+    } = await twitterClient.followers(toFollow.id, {
+      "user.fields": fields,
+      pagination_token: cursor.toFollow || undefined,
+    });
+    toFollowFollowers.push(...toFollowFollowersData);
+    cursor.toFollow;
+    log.debug(
+      "toFollow",
+      toFollowFollowersData.length,
+      toFollowFollowers.length,
+      toFollowToken
+    );
+    await database.manager.save(Cursor, cursor);
 
     const difference = toFollowFollowers
       .filter(
@@ -81,15 +89,16 @@ export async function main() {
 
     log.debug("difference", difference.length);
 
-    final = difference.filter(shouldFollow);
-    log.debug("final", final.length);
+    usersShouldFollow = difference.filter(shouldFollow);
+    log.debug("usersShouldFollow", usersShouldFollow.length);
 
-    if (final.length > 100 || (!meFollowingNext && !toFollowFollowersNext)) {
+    if (usersShouldFollow.length > 100 || (!cursor.me && !cursor.toFollow)) {
       break;
     }
+    await waitFor(10e3);
   }
 
-  const newUsers = final.map((x) => ({
+  const newUsers = usersShouldFollow.map((x) => ({
     twitterId: x.id,
     twitterUsername: x.username,
   }));

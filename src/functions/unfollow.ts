@@ -4,7 +4,7 @@ import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
 import { IsNull, LessThan } from "typeorm";
 import { subHours } from "date-fns";
-import normal from "@libs/normal";
+import normal from "../libs/normal";
 
 const log = new Logger();
 
