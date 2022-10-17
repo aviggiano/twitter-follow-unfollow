@@ -13,6 +13,10 @@ export default {
     toFollowUsername: process.env.TWITTER_TO_FOLLOW_USERNAME!,
     meUsername: process.env.TWITTER_ME_USERNAME!,
   },
+  zenduty: {
+    key: process.env.ZENDUTY_KEY!,
+    url: process.env.ZENDUTY_URL!,
+  },
   postgres: {
     host: process.env.POSTGRES_HOST!,
     port: Number(process.env.POSTGRES_PORT!),

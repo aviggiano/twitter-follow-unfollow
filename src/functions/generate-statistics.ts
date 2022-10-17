@@ -7,6 +7,9 @@ import database, {
 } from "../database";
 import { Logger } from "tslog";
 import { IsNull, Not } from "typeorm";
+import config from "../config";
+import axios from "axios";
+import { format } from "date-fns";
 
 const log = new Logger();
 
@@ -45,6 +48,17 @@ export async function main() {
     followed,
     unfollowed,
     running,
+  });
+
+  axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
+    name: `Statistics ${format(new Date(), "yyyy-MM-dd '@' hh'h'mm")}`,
+    message: [
+      `Total: ${total}`,
+      `To follow: ${toFollow}`,
+      `Followed: ${followed}`,
+      `Unfollowed: ${unfollowed}`,
+      `Running: ${running}`,
+    ].join("\n"),
   });
 
   log.info("generate-statistics end");
