@@ -31,7 +31,7 @@ export async function main() {
       follow: IsNull(),
       unfollow: IsNull(),
     },
-    take: 5,
+    take: 1,
   });
   log.debug("users", users.length);
 
@@ -57,7 +57,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(1 hour)"],
+        rate: ["rate(30 minutes)"],
       },
     },
   ],

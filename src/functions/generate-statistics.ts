@@ -13,6 +13,8 @@ import { format } from "date-fns";
 
 const log = new Logger();
 
+const NOTIFY_EVERY_HOURS = 6;
+
 export async function main() {
   log.info("generate-statistics start");
   await connect();
@@ -50,17 +52,19 @@ export async function main() {
     running,
   });
 
-  await axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
-    message: `Statistics ${format(new Date(), "yyyy-MM-dd '@' HH'h'mm")}`,
-    summary: [
-      `Total: ${total}`,
-      `To follow: ${toFollow}`,
-      `Followed: ${followed}`,
-      `Unfollowed: ${unfollowed}`,
-      `Running: ${running}`,
-    ].join("\n"),
-    alert_type: "critical",
-  });
+  if (new Date().getHours() % NOTIFY_EVERY_HOURS) {
+    await axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
+      message: `Statistics ${format(new Date(), "yyyy-MM-dd '@' HH'h'mm")}`,
+      summary: [
+        `Total: ${total}`,
+        `To follow: ${toFollow}`,
+        `Followed: ${followed}`,
+        `Unfollowed: ${unfollowed}`,
+        `Running: ${running}`,
+      ].join("\n"),
+      alert_type: "critical",
+    });
+  }
 
   log.info("generate-statistics end");
   await disconnect();

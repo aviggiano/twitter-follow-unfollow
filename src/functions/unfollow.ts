@@ -32,7 +32,7 @@ export async function main() {
       follow: LessThan(subHours(new Date(), 48)),
       unfollow: IsNull(),
     },
-    take: 5,
+    take: 2,
   });
   log.debug("users", users.length);
 
@@ -58,7 +58,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(1 hour)"],
+        rate: ["rate(30 minutes)"],
       },
     },
   ],
