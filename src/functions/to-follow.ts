@@ -13,6 +13,8 @@ import waitFor from "../libs/waitFor";
 
 const log = new Logger();
 
+const API_LIMITS = 15;
+
 export async function main() {
   log.info("to-follow start");
   await connect();
@@ -48,7 +50,7 @@ export async function main() {
 
   const cursor = await getCursor(database);
 
-  while (true) {
+  for (let i = 0; i < Math.floor(API_LIMITS / 2); i++) {
     log.debug(cursor);
     const {
       data: meFollowingData,
@@ -90,10 +92,7 @@ export async function main() {
     usersShouldFollow = difference.filter(shouldFollow);
     log.debug("usersShouldFollow", usersShouldFollow.length);
 
-    if (usersShouldFollow.length > 100 || (!cursor.me && !cursor.toFollow)) {
-      break;
-    }
-    await waitFor(10e3);
+    await waitFor(1e3);
   }
 
   const newUsers = usersShouldFollow.map((x) => ({
