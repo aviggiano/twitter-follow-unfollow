@@ -18,7 +18,7 @@ export default {
     url: process.env.ZENDUTY_URL!,
   },
   logs: {
-    colorizePrettyLogs: process.env.NODE_ENV !== "production",
+    colorizePrettyLogs: process.env.NODE_ENV === undefined,
   },
   postgres: {
     host: process.env.POSTGRES_HOST!,
