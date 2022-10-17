@@ -13,7 +13,7 @@ import waitFor from "../libs/waitFor";
 
 const log = new Logger();
 
-const API_LIMITS = 15;
+const RUNS = 5;
 
 export async function main() {
   log.info("to-follow start");
@@ -50,7 +50,7 @@ export async function main() {
 
   const cursor = await getCursor(database);
 
-  for (let i = 0; i < Math.floor(API_LIMITS / 2); i++) {
+  for (let i = 0; i < RUNS; i++) {
     log.debug(cursor);
     const {
       data: meFollowingData,
