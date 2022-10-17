@@ -1,4 +1,10 @@
-import database, { User, connect, disconnect, Statistic } from "../database";
+import database, {
+  User,
+  connect,
+  disconnect,
+  Statistic,
+  getCursor,
+} from "../database";
 import { Logger } from "tslog";
 import { IsNull, Not } from "typeorm";
 
@@ -9,7 +15,7 @@ export async function main() {
   await connect();
   await database.synchronize();
 
-  const [total, toFollow, followed, unfollowed] = await Promise.all([
+  const [total, toFollow, followed, unfollowed, cursor] = await Promise.all([
     database.manager.count(User),
     database.manager.count(User, {
       where: {
@@ -29,13 +35,16 @@ export async function main() {
         unfollow: Not(IsNull()),
       },
     }),
+    getCursor(database),
   ]);
+  const running = !!cursor.running;
 
   await database.manager.save(Statistic, {
     total,
     toFollow,
     followed,
     unfollowed,
+    running,
   });
 
   log.info("generate-statistics end");

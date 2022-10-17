@@ -20,8 +20,6 @@ export class Statistic {
   followed: number;
   @Column()
   unfollowed: number;
-  @Column()
-  running: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

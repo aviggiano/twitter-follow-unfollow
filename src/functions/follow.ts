@@ -1,4 +1,4 @@
-import database, { User, connect, disconnect } from "../database";
+import database, { User, connect, disconnect, getCursor } from "../database";
 import config from "../config";
 import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
@@ -10,6 +10,12 @@ export async function main() {
   log.info("follow start");
   await connect();
   await database.synchronize();
+
+  const cursor = await getCursor(database);
+  if (!cursor.running) {
+    log.info("not runnning");
+    return;
+  }
 
   const client = new TwitterApi({
     appKey: config.twitter.auth.appKey,
@@ -25,7 +31,7 @@ export async function main() {
       follow: IsNull(),
       unfollow: IsNull(),
     },
-    take: 10,
+    take: 5,
   });
   log.debug("users", users.length);
 

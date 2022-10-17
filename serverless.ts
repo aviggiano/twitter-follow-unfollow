@@ -23,7 +23,7 @@ const serverlessConfiguration: AWS = {
     },
     lambdaHashingVersion: "20201221",
   },
-  functions: { hello, generateStatistics },
+  functions: { hello, toFollow, follow, unfollow, generateStatistics },
   package: { individually: true },
   custom: {
     esbuild: {

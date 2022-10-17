@@ -2,7 +2,7 @@ import { AppDataSource } from "./data-source";
 
 import { User } from "./entities/User.entity";
 import { Statistic } from "./entities/Statistic.entity";
-import { Cursor } from "./entities/Cursor.entity";
+import { Cursor, getCursor } from "./entities/Cursor.entity";
 import { Logger } from "tslog";
 
 const log = new Logger();
@@ -21,6 +21,6 @@ export async function disconnect(): Promise<void> {
   }
 }
 
-export { User, Statistic, Cursor };
+export { User, Statistic, Cursor, getCursor };
 
 export default AppDataSource;

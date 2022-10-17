@@ -1,10 +1,9 @@
-import database, { User, connect, disconnect } from "../database";
+import database, { User, connect, disconnect, getCursor } from "../database";
 import config from "../config";
 import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
 import { IsNull, LessThan } from "typeorm";
 import { subHours } from "date-fns";
-import normal from "../libs/normal";
 
 const log = new Logger();
 
@@ -12,6 +11,12 @@ export async function main() {
   log.info("unfollow start");
   await connect();
   await database.synchronize();
+
+  const cursor = await getCursor(database);
+  if (!cursor.running) {
+    log.info("not runnning");
+    return;
+  }
 
   const client = new TwitterApi({
     appKey: config.twitter.auth.appKey,
@@ -24,10 +29,10 @@ export async function main() {
 
   const users = await database.manager.find(User, {
     where: {
-      follow: LessThan(subHours(new Date(), normal(24))),
+      follow: LessThan(subHours(new Date(), 48)),
       unfollow: IsNull(),
     },
-    take: 15,
+    take: 5,
   });
   log.debug("users", users.length);
 

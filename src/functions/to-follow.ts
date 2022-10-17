@@ -1,9 +1,14 @@
-import database, { User, connect, disconnect, Cursor } from "../database";
+import database, {
+  User,
+  connect,
+  disconnect,
+  Cursor,
+  getCursor,
+} from "../database";
 import config from "../config";
 import { TTweetv2UserField, TwitterApi, UserV2 } from "twitter-api-v2";
 import { Logger } from "tslog";
 import shouldFollow from "../libs/shouldFollow";
-import { IsNull, Not } from "typeorm";
 import waitFor from "../libs/waitFor";
 
 const log = new Logger();
@@ -41,15 +46,8 @@ export async function main() {
   const meFollowing: UserV2[] = [];
   const toFollowFollowers: UserV2[] = [];
 
-  let cursor = await database.manager.findOne(Cursor, {
-    where: {
-      id: Not(IsNull()),
-    },
-  });
-  if (!cursor) {
-    await database.manager.save(Cursor, {});
-    cursor = (await database.manager.findOne(Cursor, {})) as Cursor;
-  }
+  const cursor = await getCursor(database);
+
   while (true) {
     log.debug(cursor);
     const {
