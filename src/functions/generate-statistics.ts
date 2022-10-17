@@ -50,15 +50,16 @@ export async function main() {
     running,
   });
 
-  axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
-    name: `Statistics ${format(new Date(), "yyyy-MM-dd '@' hh'h'mm")}`,
-    message: [
+  await axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
+    message: `Statistics ${format(new Date(), "yyyy-MM-dd '@' HH'h'mm")}`,
+    summary: [
       `Total: ${total}`,
       `To follow: ${toFollow}`,
       `Followed: ${followed}`,
       `Unfollowed: ${unfollowed}`,
       `Running: ${running}`,
     ].join("\n"),
+    alert_type: "critical",
   });
 
   log.info("generate-statistics end");
