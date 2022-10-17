@@ -12,16 +12,16 @@ export class Statistic {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  total: number;
-  @Column()
-  toFollow: number;
-  @Column()
-  followed: number;
-  @Column()
-  unfollowed: number;
-  @Column()
-  running: boolean;
+  @Column({ nullable: true })
+  total?: number;
+  @Column({ nullable: true })
+  toFollow?: number;
+  @Column({ nullable: true })
+  followed?: number;
+  @Column({ nullable: true })
+  unfollowed?: number;
+  @Column({ nullable: true })
+  running?: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
