@@ -4,7 +4,7 @@ import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
 import { IsNull } from "typeorm";
 
-const log = new Logger();
+const log = new Logger(config.logs);
 
 export async function main() {
   log.info("follow start");

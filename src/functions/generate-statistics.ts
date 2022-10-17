@@ -11,7 +11,7 @@ import config from "../config";
 import axios from "axios";
 import { format } from "date-fns";
 
-const log = new Logger();
+const log = new Logger(config.logs);
 
 const NOTIFY_EVERY_HOURS = 6;
 

@@ -5,7 +5,7 @@ import { Logger } from "tslog";
 import { IsNull, LessThan } from "typeorm";
 import { subHours } from "date-fns";
 
-const log = new Logger();
+const log = new Logger(config.logs);
 
 export async function main() {
   log.info("unfollow start");

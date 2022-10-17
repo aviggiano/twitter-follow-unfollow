@@ -11,7 +11,7 @@ import { Logger } from "tslog";
 import shouldFollow from "../libs/shouldFollow";
 import waitFor from "../libs/waitFor";
 
-const log = new Logger();
+const log = new Logger(config.logs);
 
 const RUNS = 5;
 
