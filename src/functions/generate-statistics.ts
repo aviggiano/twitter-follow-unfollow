@@ -52,7 +52,7 @@ export async function main() {
     running,
   });
 
-  if (new Date().getHours() % NOTIFY_EVERY_HOURS) {
+  if (new Date().getHours() % NOTIFY_EVERY_HOURS === 0) {
     await axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
       message: `Statistics ${format(new Date(), "yyyy-MM-dd '@' HH'h'mm")}`,
       summary: [
