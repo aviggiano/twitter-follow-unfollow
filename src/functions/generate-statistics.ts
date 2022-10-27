@@ -13,8 +13,6 @@ import { format } from "date-fns";
 
 const log = new Logger(config.logs);
 
-const NOTIFY_EVERY_HOURS = 6;
-
 export async function main() {
   log.info("generate-statistics start");
   await connect();
@@ -52,7 +50,7 @@ export async function main() {
     running,
   });
 
-  if (new Date().getHours() % NOTIFY_EVERY_HOURS === 0) {
+  if (new Date().getHours() == 12) {
     await axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
       message: `Statistics ${format(new Date(), "yyyy-MM-dd '@' HH'h'mm")}`,
       summary: [

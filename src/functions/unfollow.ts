@@ -3,7 +3,7 @@ import config from "../config";
 import { TwitterApi } from "twitter-api-v2";
 import { Logger } from "tslog";
 import { IsNull, LessThan } from "typeorm";
-import { subHours } from "date-fns";
+import { subDays } from "date-fns";
 
 const log = new Logger(config.logs);
 
@@ -29,10 +29,10 @@ export async function main() {
 
   const users = await database.manager.find(User, {
     where: {
-      follow: LessThan(subHours(new Date(), 48)),
+      follow: LessThan(subDays(new Date(), 7)),
       unfollow: IsNull(),
     },
-    take: 2,
+    take: 1,
   });
   log.debug("users", users.length);
 
@@ -58,7 +58,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(30 minutes)"],
+        rate: ["rate(1 day)"],
       },
     },
   ],
