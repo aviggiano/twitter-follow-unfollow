@@ -50,7 +50,7 @@ export async function main() {
     running,
   });
 
-  if (new Date().getHours() == 12) {
+  if (new Date().getHours() == -1) {
     await axios.post(`${config.zenduty.url}/${config.zenduty.key}/`, {
       message: `Statistics ${format(new Date(), "yyyy-MM-dd '@' HH'h'mm")}`,
       summary: [
