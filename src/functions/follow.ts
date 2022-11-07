@@ -57,7 +57,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(18 hours)"],
+        rate: ["rate(12 hours)"],
       },
     },
   ],
