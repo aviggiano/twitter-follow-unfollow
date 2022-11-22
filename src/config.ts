@@ -2,6 +2,13 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 export default {
+  unfollowAfterDays: 4,
+  rate: {
+    unfollow: "rate(2 hours)",
+    follow: "rate(4 hours)",
+    generateStatistics: "rate(1 day)",
+    toFollow: "rate(30 days)",
+  },
   twitter: {
     auth: {
       bearerToken: process.env.TWITTER_BEARER_TOKEN!,

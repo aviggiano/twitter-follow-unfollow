@@ -110,7 +110,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(30 days)"],
+        rate: [config.rate.toFollow],
       },
     },
   ],

@@ -74,7 +74,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(1 hour)"],
+        rate: [config.rate.generateStatistics],
       },
     },
   ],

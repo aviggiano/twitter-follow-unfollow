@@ -29,7 +29,7 @@ export async function main() {
 
   const users = await database.manager.find(User, {
     where: {
-      follow: LessThan(subDays(new Date(), 7)),
+      follow: LessThan(subDays(new Date(), config.unfollowAfterDays)),
       unfollow: IsNull(),
     },
     take: 1,
@@ -58,7 +58,7 @@ export default {
   events: [
     {
       schedule: {
-        rate: ["rate(6 hours)"],
+        rate: [config.rate.unfollow],
       },
     },
   ],
